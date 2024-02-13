@@ -30,6 +30,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    // FirebaseMessaging.onBackgroundMessage((message) async {
+    //   (context).pushNamed(MyAppRouteConst.cartPage);
+    // });
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   print(
+    //       "================================================${message.notification!.title}");
+    // });
+
     FirebaseAuth.instance.authStateChanges().listen(
       (User? user) {
         if (user == null) {
