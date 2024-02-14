@@ -16,7 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await ScreenUtil.ensureScreenSize();
-
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
 
@@ -30,13 +30,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    // FirebaseMessaging.onBackgroundMessage((message) async {
-    //   (context).pushNamed(MyAppRouteConst.cartPage);
-    // });
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   print(
-    //       "================================================${message.notification!.title}");
-    // });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        print(
+            "==================================${message.notification!.title}");
+      }
+    });
 
     FirebaseAuth.instance.authStateChanges().listen(
       (User? user) {
@@ -48,6 +47,7 @@ class _MyAppState extends State<MyApp> {
       },
     );
     myGetToken();
+    mySubscribeToTopicFunc();
     super.initState();
   }
 
@@ -101,4 +101,14 @@ sendNotification(String titleMessage, String bodyMessage) async {
   } else {
     print(res.reasonPhrase);
   }
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
+  print("==================================${message.notification!.body}");
+}
+
+mySubscribeToTopicFunc() async {
+  await FirebaseMessaging.instance.subscribeToTopic('LOL');
 }
