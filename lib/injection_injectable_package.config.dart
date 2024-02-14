@@ -86,7 +86,8 @@ _i1.GetIt $init(
       () => _i9.LoginLogoutCacheHelperBloc());
   gh.lazySingleton<_i10.NetworkInfo>(
       () => _i10.NetworkInfoImpl(gh<_i7.InternetConnectionChecker>()));
-  gh.lazySingletonAsync<_i11.SharedPreferences>(() => registerModule.prefs2);
+  gh.lazySingletonAsync<_i11.SharedPreferences>(
+      () => registerModule.sharedPreferences);
   gh.lazySingleton<_i12.UserLocalDataSource>(
       () => _i12.UserLocalDataSourceImpl());
   gh.lazySingleton<_i13.UserRemoteDataSource>(() =>

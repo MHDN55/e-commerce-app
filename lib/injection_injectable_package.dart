@@ -14,7 +14,7 @@ abstract class RegisterModule {
   @lazySingleton
   FirebaseAuth get prefs1 => FirebaseAuth.instance;
   @lazySingleton
-  Future<SharedPreferences> get prefs2 => SharedPreferences.getInstance();
+  Future<SharedPreferences> get sharedPreferences => SharedPreferences.getInstance();
 }
 
 @InjectableInit(
