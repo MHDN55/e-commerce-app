@@ -1,19 +1,27 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:e_commerce_app/core/routes/app_route_const.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:go_router/go_router.dart';
 // import 'package:http/http.dart' as http;
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
+
   print("title ======================== ${message.notification!.title}");
+
   print("body ======================== ${message.notification!.body}");
+
   print("payload ======================== ${message.data}");
 }
 
 class FirebaseApi {
+  late BuildContext context;
+
   final firebaseMessaging = FirebaseMessaging.instance;
 
   final androidChanle = const AndroidNotificationChannel(
@@ -28,7 +36,7 @@ class FirebaseApi {
   void handleMessage(RemoteMessage? message) {
     if (message != null) {
       if (message.data['page'] == "card") {
-        // GoRouter.of(context).pushNamed(MyAppRouteConst.cartPage);
+        GoRouter.of(context).pushNamed(MyAppRouteConst.cartPage);
       }
     }
   }
@@ -36,6 +44,7 @@ class FirebaseApi {
   Future initLocalNotifications() async {
     final platform = localNotifications.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
+
     await platform?.createNotificationChannel(androidChanle);
   }
 
@@ -48,8 +57,11 @@ class FirebaseApi {
     );
 
     FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
       if (notification == null) {
@@ -73,15 +85,19 @@ class FirebaseApi {
   }
 
   Future<void> initNotification() async {
-    await firebaseMessaging.requestPermission();
+    try {
+      await firebaseMessaging.requestPermission();
 
-    final token = await firebaseMessaging.getToken();
+      final token = await firebaseMessaging.getToken();
 
-    print("====================================$token");
+      print("=============== token =============== $token");
 
-    initPushNotifications();
+      initPushNotifications();
 
-    initLocalNotifications();
+      initLocalNotifications();
+    } catch (e) {
+      print("============== error ============== $e");
+    }
   }
 }
 
