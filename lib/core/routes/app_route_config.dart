@@ -10,13 +10,18 @@ import 'package:e_commerce_app/Features/profile/presentation/pages/profile_page.
 import 'package:e_commerce_app/Features/welcoming/presentation/pages/welcoming_first.dart';
 import 'package:e_commerce_app/Features/welcoming/presentation/pages/welcoming_second_page.dart';
 import 'package:e_commerce_app/core/screens/splash_screen.dart';
+import 'package:e_commerce_app/injection_injectable_package.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_route_const.dart';
 
 class MyAppRouter {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      getIt<GlobalKey<NavigatorState>>();
+
   static final GoRouter router = GoRouter(
+    navigatorKey: navigatorKey,
     routes: [
       GoRoute(
         name: MyAppRouteConst.splashScreen,
@@ -82,6 +87,7 @@ class MyAppRouter {
       GoRoute(
         name: MyAppRouteConst.cartPage,
         path: '/cart_page',
+        parentNavigatorKey: navigatorKey,
         builder: (context, state) {
           return const CartPage();
         },

@@ -13,7 +13,7 @@ class LoginLogoutCacheHelperBloc
   LoginLogoutCacheHelperBloc() : super(LoginLogoutCacheHelperInitial()) {
     on<LoginLogoutCacheHelperEvent>((event, emit) async {
       if (event is LoginLogoutChachHelperSignInSignOutCaching) {
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 1));
 
         final isCached =
             await UserLocalDataSourceImpl().getCachedSignInSignOut();

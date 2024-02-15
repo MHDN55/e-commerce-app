@@ -1,12 +1,13 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
-import 'package:e_commerce_app/core/routes/app_route_const.dart';
+import 'package:e_commerce_app/injection_injectable_package.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
+import '../routes/app_route_const.dart';
 // import 'package:http/http.dart' as http;
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -20,7 +21,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class FirebaseApi {
-  late BuildContext context;
+  // late BuildContext context;
 
   final firebaseMessaging = FirebaseMessaging.instance;
 
@@ -33,15 +34,37 @@ class FirebaseApi {
 
   final localNotifications = FlutterLocalNotificationsPlugin();
 
-  void handleMessage(RemoteMessage? message) {
+  final GlobalKey<NavigatorState> navigatorKey =
+      getIt<GlobalKey<NavigatorState>>();
+
+  void handleMessage(RemoteMessage? message) async{
+    debugPrint('----> $message');
+
     if (message != null) {
-      if (message.data['page'] == "card") {
-        GoRouter.of(context).pushNamed(MyAppRouteConst.cartPage);
+      debugPrint('----> $message');
+      if (message.data['page'] == "cart") {
+        await Future.delayed(const Duration(milliseconds: 1100));
+        // ignore: use_build_context_synchronously
+        navigatorKey.currentContext!.pushNamed(MyAppRouteConst.cartPage);
       }
     }
   }
 
   Future initLocalNotifications() async {
+    const iOS = DarwinInitializationSettings();
+    const android = AndroidInitializationSettings('mipmap/ic_launcher');
+
+    const settings = InitializationSettings(
+      android: android,
+      iOS: iOS,
+    );
+    await localNotifications.initialize(
+      settings,
+      onDidReceiveNotificationResponse: (details) {
+        final message = RemoteMessage.fromMap(jsonDecode(details.payload!));
+        handleMessage(message);
+      },
+    );
     final platform = localNotifications.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
 
@@ -62,26 +85,28 @@ class FirebaseApi {
 
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-    FirebaseMessaging.onMessage.listen((message) {
-      final notification = message.notification;
-      if (notification == null) {
-        return;
-      }
-      localNotifications.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            androidChanle.id,
-            androidChanle.name,
-            channelDescription: androidChanle.description,
-            icon: 'mipmap/ic_launcher',
-          ),
-        ),
-        payload: jsonEncode(message.toMap()),
-      );
-    });
+    FirebaseMessaging.onMessage.listen(
+      (message) {
+        debugPrint('on message');
+        final notification = message.notification;
+        if (notification != null) {
+          localNotifications.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                androidChanle.id,
+                androidChanle.name,
+                channelDescription: androidChanle.description,
+                icon: 'mipmap/ic_launcher',
+              ),
+            ),
+            payload: jsonEncode(message.toMap()),
+          );
+        }
+      },
+    );
   }
 
   Future<void> initNotification() async {

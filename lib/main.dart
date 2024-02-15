@@ -15,8 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   di.configureDependencies();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseApi().initNotification();
-
+  FirebaseApi().initNotification();
   runApp(const MyApp());
 }
 
@@ -30,13 +29,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        print(
-            "==================================${message.notification!.title}");
-      }
-    });
-
     FirebaseAuth.instance.authStateChanges().listen(
       (User? user) {
         if (user == null) {
@@ -46,15 +38,11 @@ class _MyAppState extends State<MyApp> {
         }
       },
     );
-    // myGetToken();
+
     mySubscribeToTopicFunc();
     super.initState();
   }
 
-  // myGetToken() async {
-  //   String? token = await FirebaseMessaging.instance.getToken();
-  //   print("======================================================$token");
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -70,12 +58,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-
-//   print("==================================${message.notification!.body}");
-// }
 
 mySubscribeToTopicFunc() async {
   await FirebaseMessaging.instance.subscribeToTopic('LOL');
