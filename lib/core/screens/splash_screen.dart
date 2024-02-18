@@ -1,4 +1,4 @@
-import 'package:e_commerce_app/Features/welcoming/presentation/blocs/login_logout_cache_helper/login_logout_cache_helper_bloc.dart';
+import 'package:e_commerce_app/Features/welcoming/presentation/blocs/splash/splash_bloc.dart';
 import 'package:e_commerce_app/core/routes/app_route_const.dart';
 import 'package:e_commerce_app/injection_injectable_package.dart';
 import 'package:flutter/material.dart';
@@ -87,8 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    getIt<LoginLogoutCacheHelperBloc>()
-        .add(LoginLogoutChachHelperSignInSignOutCaching());
+    getIt<SplashBloc>().add(GetCachedSplashEvent());
     super.initState();
   }
 
@@ -99,23 +98,28 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
+  final GlobalKey<NavigatorState> navigatorKey =
+      getIt<GlobalKey<NavigatorState>>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-          BlocListener<LoginLogoutCacheHelperBloc, LoginLogoutCacheHelperState>(
-        bloc: getIt<LoginLogoutCacheHelperBloc>(),
+      body: BlocListener<SplashBloc, SplashState>(
+        bloc: getIt<SplashBloc>(),
         listener: (context, state) {
-          if (state is LoginLogoutCacheHelperCached) {
+          if (state.status == SplashStatus.loaded) {
             if (!state.isOnboarding) {
-              (context)
-                  .pushReplacementNamed(MyAppRouteConst.welcomingFirstPage);
+              context.pushReplacementNamed(MyAppRouteConst.welcomingFirstPage);
             } else {
               if (!state.isAuth) {
-                (context)
+                context
                     .pushReplacementNamed(MyAppRouteConst.welcomingSecondPage);
               } else {
-                (context).pushReplacementNamed(MyAppRouteConst.homePage);
+                context.pushReplacementNamed(MyAppRouteConst.homePage);
+
+                if (state.remoteMessage.data['page'] == "cart") {
+                  navigatorKey.currentContext!
+                      .pushNamed(MyAppRouteConst.cartPage);
+                }
               }
             }
           }

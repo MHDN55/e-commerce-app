@@ -34,7 +34,7 @@ class UserRepositoryImp implements UserRepository {
     if (await networkInfo.isConnected) {
       try {
         await remoteDataSource.signIn(userModel);
-        await localDataSource.cachingSignInSignOut(true);
+        await localDataSource.cachingOnboarding(true);
         return const Right(unit);
       } on ServerException {
         return Left(ServerFailure());
@@ -49,7 +49,7 @@ class UserRepositoryImp implements UserRepository {
     if (await networkInfo.isConnected) {
       try {
         await remoteDataSource.signOut();
-        await localDataSource.cachingSignInSignOut(false);
+        await localDataSource.cachingOnboarding(false);
         return const Right(unit);
       } on ServerException {
         return Left(ServerFailure());

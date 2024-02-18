@@ -14,9 +14,9 @@ import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:internet_connection_checker/internet_connection_checker.dart'
     as _i8;
-import 'package:shared_preferences/shared_preferences.dart' as _i12;
+import 'package:shared_preferences/shared_preferences.dart' as _i11;
 
-import 'core/network/network_info.dart' as _i11;
+import 'core/network/network_info.dart' as _i10;
 import 'Features/auth/data/datasources/user_local_data_source.dart' as _i13;
 import 'Features/auth/data/datasources/user_remote_data_source.dart' as _i14;
 import 'Features/auth/data/repositories/user_repository_impl.dart' as _i16;
@@ -58,8 +58,7 @@ import 'Features/profile/domain/usecases/get_orders_list.dart' as _i22;
 import 'Features/profile/domain/usecases/get_user.dart' as _i27;
 import 'Features/profile/presentation/blocs/added_items/added_items_bloc.dart'
     as _i37;
-import 'Features/welcoming/presentation/blocs/login_logout_cache_helper/login_logout_cache_helper_bloc.dart'
-    as _i10;
+import 'Features/welcoming/presentation/blocs/splash/splash_bloc.dart' as _i12;
 import 'injection_injectable_package.dart' as _i41;
 
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -85,12 +84,11 @@ _i1.GetIt $init(
   gh.lazySingleton<_i8.InternetConnectionChecker>(() => registerModule.prefs);
   gh.lazySingleton<_i9.ItemRemoteDataSource>(
       () => _i9.ItemRemoteDataSourceImpl());
-  gh.lazySingleton<_i10.LoginLogoutCacheHelperBloc>(
-      () => _i10.LoginLogoutCacheHelperBloc());
-  gh.lazySingleton<_i11.NetworkInfo>(
-      () => _i11.NetworkInfoImpl(gh<_i8.InternetConnectionChecker>()));
-  gh.lazySingletonAsync<_i12.SharedPreferences>(
+  gh.lazySingleton<_i10.NetworkInfo>(
+      () => _i10.NetworkInfoImpl(gh<_i8.InternetConnectionChecker>()));
+  gh.lazySingletonAsync<_i11.SharedPreferences>(
       () => registerModule.sharedPreferences);
+  gh.lazySingleton<_i12.SplashBloc>(() => _i12.SplashBloc());
   gh.lazySingleton<_i13.UserLocalDataSource>(
       () => _i13.UserLocalDataSourceImpl());
   gh.lazySingleton<_i14.UserRemoteDataSource>(() =>
@@ -98,21 +96,21 @@ _i1.GetIt $init(
   gh.lazySingleton<_i15.UserRepository>(() => _i16.UserRepositoryImp(
         localDataSource: gh<_i13.UserLocalDataSource>(),
         remoteDataSource: gh<_i14.UserRemoteDataSource>(),
-        networkInfo: gh<_i11.NetworkInfo>(),
+        networkInfo: gh<_i10.NetworkInfo>(),
       ));
   gh.lazySingleton<_i17.AddedItemsRepository>(
       () => _i18.AddedItemsRepositoryImpl(
             remoteDataSource: gh<_i4.AddedItemsRemoteDataSource>(),
-            networkInfo: gh<_i11.NetworkInfo>(),
+            networkInfo: gh<_i10.NetworkInfo>(),
           ));
   gh.lazySingleton<_i19.CategoriesRepository>(
       () => _i20.CategoriesRepositoryImpl(
             remoteDataSource: gh<_i5.CategoryRemoteDataSource>(),
-            networkInfo: gh<_i11.NetworkInfo>(),
+            networkInfo: gh<_i10.NetworkInfo>(),
           ));
   gh.lazySingletonAsync<_i21.CategoryLocalDataSource>(() async =>
       _i21.CategoryLocalDataSourceImpl(
-          prefs: await gh.getAsync<_i12.SharedPreferences>()));
+          prefs: await gh.getAsync<_i11.SharedPreferences>()));
   gh.lazySingleton<_i22.GetAddedOrdersUsecase>(
       () => _i22.GetAddedOrdersUsecase(gh<_i17.AddedItemsRepository>()));
   gh.lazySingleton<_i23.GetAllCategoriesUseCase>(
@@ -127,7 +125,7 @@ _i1.GetIt $init(
       () => _i27.GetUserUsecase(gh<_i17.AddedItemsRepository>()));
   gh.lazySingleton<_i28.ItemsRepository>(() => _i29.ItemsRepositoryImpl(
         remoteDataSource: gh<_i9.ItemRemoteDataSource>(),
-        networkInfo: gh<_i11.NetworkInfo>(),
+        networkInfo: gh<_i10.NetworkInfo>(),
       ));
   gh.lazySingleton<_i30.SignInUseCase>(
       () => _i30.SignInUseCase(repository: gh<_i15.UserRepository>()));

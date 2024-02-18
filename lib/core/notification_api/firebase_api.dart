@@ -37,14 +37,11 @@ class FirebaseApi {
   final GlobalKey<NavigatorState> navigatorKey =
       getIt<GlobalKey<NavigatorState>>();
 
-  void handleMessage(RemoteMessage? message) async{
-    debugPrint('----> $message');
+
+  void handleMessage(RemoteMessage? message) async {
 
     if (message != null) {
-      debugPrint('----> $message');
       if (message.data['page'] == "cart") {
-        await Future.delayed(const Duration(milliseconds: 1100));
-        // ignore: use_build_context_synchronously
         navigatorKey.currentContext!.pushNamed(MyAppRouteConst.cartPage);
       }
     }
@@ -52,12 +49,14 @@ class FirebaseApi {
 
   Future initLocalNotifications() async {
     const iOS = DarwinInitializationSettings();
+
     const android = AndroidInitializationSettings('mipmap/ic_launcher');
 
     const settings = InitializationSettings(
       android: android,
       iOS: iOS,
     );
+
     await localNotifications.initialize(
       settings,
       onDidReceiveNotificationResponse: (details) {
@@ -65,6 +64,7 @@ class FirebaseApi {
         handleMessage(message);
       },
     );
+
     final platform = localNotifications.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
 
@@ -78,8 +78,6 @@ class FirebaseApi {
       badge: true,
       sound: true,
     );
-
-    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
 
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
 
